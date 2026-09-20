@@ -4,7 +4,7 @@
 // =============================================
 
 // In dev, empty base URL routes through Vite reverse proxy to avoid CORS preflight blocks
-export const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://parkly-backend.up.railway.app' : '');
 
 /**
  * Core fetch wrapper with automatic JWT authorization and error handling
