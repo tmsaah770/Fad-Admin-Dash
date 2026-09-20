@@ -1,0 +1,52 @@
+/* =============================================
+   BOOKINGS CHART COMPONENT
+   ============================================= */
+
+.bookings-chart-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  flex: 1;
+  min-width: 0;
+}
+
+.bookings-chart-header {
+  margin-bottom: 20px;
+}
+
+.bookings-chart-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.bookings-chart-subtitle {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.bookings-chart-body {
+  width: 100%;
+}
+
+/* Tooltip */
+.bookings-tooltip {
+  background: var(--color-text-primary);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.bookings-tooltip-label {
+  font-size: 11px;
+  color: #9A9FA5;
+  margin-bottom: 2px;
+}
+
+.bookings-tooltip-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}

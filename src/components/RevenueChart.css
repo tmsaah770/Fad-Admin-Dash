@@ -1,0 +1,61 @@
+/* =============================================
+   REVENUE CHART COMPONENT
+   ============================================= */
+
+.revenue-chart-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  flex: 1.6;
+  min-width: 0;
+}
+
+.revenue-chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.revenue-chart-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.revenue-chart-subtitle {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.revenue-chart-total {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.revenue-chart-body {
+  width: 100%;
+}
+
+/* Tooltip */
+.revenue-tooltip {
+  background: var(--color-text-primary);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.revenue-tooltip-label {
+  font-size: 11px;
+  color: #9A9FA5;
+  margin-bottom: 2px;
+}
+
+.revenue-tooltip-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}

@@ -1,0 +1,294 @@
+/* =============================================
+   NOTIFICATIONS PAGE STYLES
+   ============================================= */
+
+.notifications-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Header ---- */
+.notifications-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.notifications-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text-primary, #101828);
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+
+.notifications-subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary, #667085);
+}
+
+.notifications-mark-read-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #344054;
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #E4E7EC);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+  transition: all 0.15s ease;
+}
+
+.notifications-mark-read-btn:hover {
+  border-color: var(--color-primary, #2B76F6);
+  color: var(--color-primary, #2B76F6);
+  background: #EFF4FF;
+}
+
+/* ---- 5 Stats Cards Grid ---- */
+.notifications-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.notifications-stat-card {
+  background: var(--color-bg-card, #ffffff);
+  border-radius: var(--radius-lg, 16px);
+  padding: 20px 20px;
+  border: 1px solid var(--color-border-light, #F2F4F7);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04), 0 1px 2px rgba(16, 24, 40, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.notifications-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(16, 24, 40, 0.06);
+}
+
+.notifications-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.notifications-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-primary, #101828);
+  line-height: 1.15;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+
+.notifications-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8A94A6;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+/* ---- Filter Bar Card ---- */
+.notifications-filter-card {
+  background: var(--color-bg-card, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--color-border-light, #F2F4F7);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.notifications-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475467;
+  background: #ffffff;
+  border: 1px solid #E4E7EC;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.notifications-filter-btn:hover {
+  border-color: var(--color-primary, #2B76F6);
+  color: var(--color-primary, #2B76F6);
+  background: #EFF4FF;
+}
+
+.notifications-filter-btn.active {
+  background: #EFF4FF;
+  border-color: var(--color-primary, #2B76F6);
+  color: var(--color-primary, #2B76F6);
+  font-weight: 600;
+}
+
+.notifications-filter-count {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: #F2F4F7;
+  color: #475467;
+}
+
+.notifications-filter-btn.active .notifications-filter-count {
+  background: #2B76F6;
+  color: #ffffff;
+}
+
+/* ---- Notifications List Card ---- */
+.notifications-list-card {
+  background: var(--color-bg-card, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--color-border-light, #F2F4F7);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  overflow: hidden;
+}
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--color-border-light, #F2F4F7);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background: #F8FAFC;
+}
+
+.notification-item.unread {
+  background: #FCFCFD;
+}
+
+.notification-item.unread:hover {
+  background: #F4F7FB;
+}
+
+.notification-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.notification-icon-box {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notification-text-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.notification-item-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary, #101828);
+}
+
+.notification-item-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary, #667085);
+  line-height: 1.4;
+}
+
+.notification-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.notification-unread-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary, #2B76F6);
+  box-shadow: 0 0 0 3px rgba(43, 118, 246, 0.15);
+}
+
+.notification-time {
+  font-size: 12.5px;
+  color: #8A94A6;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.notifications-empty-state {
+  padding: 60px 24px;
+  text-align: center;
+  color: #667085;
+  font-size: 14px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1100px) {
+  .notifications-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .notifications-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .notifications-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .notification-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .notification-right {
+    align-self: flex-end;
+  }
+}

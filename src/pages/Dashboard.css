@@ -1,0 +1,62 @@
+/* =============================================
+   DASHBOARD PAGE
+   ============================================= */
+
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dashboard-page-header {
+  margin-bottom: 4px;
+}
+
+.dashboard-page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.dashboard-page-subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+/* ---- Stats Grid ---- */
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* ---- Charts Row ---- */
+.dashboard-charts-row {
+  display: flex;
+  gap: 16px;
+}
+
+/* ---- Bottom Row ---- */
+.dashboard-bottom-row {
+  display: flex;
+  gap: 16px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1200px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-charts-row,
+  .dashboard-bottom-row {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

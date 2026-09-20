@@ -1,0 +1,350 @@
+/* =============================================
+   REPORTS & ANALYTICS PAGE STYLES
+   ============================================= */
+
+.analytics-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Header ---- */
+.analytics-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.analytics-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text-primary, #101828);
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+
+.analytics-subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary, #667085);
+}
+
+.analytics-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.analytics-time-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-bg-card, #ffffff);
+  padding: 4px;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border, #E4E7EC);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+}
+
+.analytics-time-btn {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475467;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.analytics-time-btn:hover {
+  color: var(--color-primary, #2B76F6);
+}
+
+.analytics-time-btn.active {
+  background: #EFF4FF;
+  border-color: var(--color-primary, #2B76F6);
+  color: var(--color-primary, #2B76F6);
+  font-weight: 600;
+}
+
+.analytics-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #344054;
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #E4E7EC);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+  transition: all 0.15s ease;
+}
+
+.analytics-export-btn:hover {
+  border-color: var(--color-primary, #2B76F6);
+  color: var(--color-primary, #2B76F6);
+  background: #EFF4FF;
+}
+
+/* ---- Stats Cards Grid ---- */
+.analytics-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.analytics-stat-card {
+  background: var(--color-bg-card, #ffffff);
+  border-radius: var(--radius-lg, 16px);
+  padding: 22px 24px;
+  border: 1px solid var(--color-border-light, #F2F4F7);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04), 0 1px 2px rgba(16, 24, 40, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.analytics-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(16, 24, 40, 0.06);
+}
+
+.analytics-stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.analytics-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.analytics-stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: #ECFDF3;
+  color: #12B76A;
+  border: 1px solid #D1FADF;
+}
+
+.analytics-stat-value {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--color-text-primary, #101828);
+  line-height: 1.15;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.analytics-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8A94A6;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+/* ---- Big Trend Chart Card ---- */
+.analytics-chart-card {
+  background: var(--color-bg-card, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--color-border-light, #F2F4F7);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  padding: 24px;
+}
+
+.analytics-chart-header {
+  margin-bottom: 20px;
+}
+
+.analytics-chart-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #101828;
+  margin-bottom: 3px;
+}
+
+.analytics-chart-sub {
+  font-size: 13px;
+  color: #667085;
+}
+
+.analytics-trend-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 14px;
+}
+
+.analytics-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: default;
+}
+
+.analytics-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Tooltip */
+.analytics-custom-tooltip {
+  background: #ffffff;
+  border: 1px solid #E4E7EC;
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: 0 8px 16px rgba(16, 24, 40, 0.08);
+}
+
+.analytics-tooltip-month {
+  font-size: 12px;
+  font-weight: 700;
+  color: #101828;
+  margin-bottom: 4px;
+}
+
+.analytics-tooltip-row {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+/* ---- Bottom Grid ---- */
+.analytics-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Revenue by Owner Card */
+.analytics-revenue-card {
+  background: var(--color-bg-card, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--color-border-light, #F2F4F7);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.analytics-revenue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.analytics-revenue-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.analytics-revenue-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.analytics-owner-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #101828;
+}
+
+.analytics-owner-rev {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #12B76A;
+}
+
+.analytics-progress-track {
+  width: 100%;
+  height: 6px;
+  background: #F2F4F7;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.analytics-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.6s ease;
+}
+
+.analytics-revenue-sub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: #667085;
+}
+
+/* Bookings by Owner Card */
+.analytics-bookings-card {
+  background: var(--color-bg-card, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--color-border-light, #F2F4F7);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  padding: 24px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+  .analytics-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .analytics-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .analytics-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .analytics-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,101 @@
+/* =============================================
+   PENDING APPROVALS COMPONENT
+   ============================================= */
+
+.pending-approvals-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  flex: 1;
+  min-width: 0;
+}
+
+.pending-approvals-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 20px;
+}
+
+.pending-approvals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pending-approvals-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.pending-approvals-item:hover {
+  background: var(--color-bg-page);
+}
+
+.pending-approvals-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.pending-approvals-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pending-approvals-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+.pending-approvals-org {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pending-approvals-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.pending-approvals-badge.pending {
+  background: var(--color-orange-bg);
+  color: var(--color-orange);
+}
+
+.pending-approvals-badge.pending:hover {
+  background: #FFE8CC;
+}
+
+.pending-approvals-badge.verify {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.pending-approvals-badge.verify:hover {
+  background: #D4E5FE;
+}
