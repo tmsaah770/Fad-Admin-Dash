@@ -43,16 +43,18 @@ export default function Users() {
             color: '#2B76F6'
           }));
           setUsersList(mapped);
-        }
 
-        if (statsRes.status === 'fulfilled' && statsRes.value?.data) {
-           const s = statsRes.value.data;
-           setStats({
-             total: s.totalUsers ?? 0,
-             active: s.activeUsers ?? 0,
-             pending: s.pendingUsers ?? 0,
-             suspended: s.suspendedUsers ?? 0,
-           });
+          // Calculate stats directly from the live list to ensure accuracy
+          const activeCount = mapped.filter((u) => u.status === 'active').length;
+          const pendingCount = mapped.filter((u) => u.status === 'pending').length;
+          const suspendedCount = mapped.filter((u) => u.status === 'suspended').length;
+
+          setStats({
+            total: mapped.length,
+            active: activeCount,
+            pending: pendingCount,
+            suspended: suspendedCount,
+          });
         }
       } catch (e) {
         console.error('Failed to load users:', e);
