@@ -27,6 +27,8 @@ const iconMap = {
   Settings,
 };
 
+import logoImg from '../assets/dash-logo.jpeg';
+
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -112,13 +114,7 @@ export default function Sidebar() {
     <aside className="sidebar" id="sidebar">
       {/* Logo */}
       <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <rect width="28" height="28" rx="8" fill="#2B76F6" />
-            <text x="6" y="20" fill="white" fontSize="16" fontWeight="700" fontFamily="Inter">P</text>
-          </svg>
-        </div>
-        <span className="sidebar-logo-text">PARKLY</span>
+        <img src={logoImg} alt="Parkly Logo" className="sidebar-logo-img" />
       </div>
 
       {/* Navigation */}
