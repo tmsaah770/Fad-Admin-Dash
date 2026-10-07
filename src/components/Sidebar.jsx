@@ -27,7 +27,7 @@ const iconMap = {
   Settings,
 };
 
-import logoImg from '../assets/dash-logo.jpeg';
+import logoImg from '../assets/dash-logo.jpg';
 
 export default function Sidebar() {
   const location = useLocation();
@@ -115,6 +115,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="sidebar-logo">
         <img src={logoImg} alt="Parkly Logo" className="sidebar-logo-img" />
+        <span className="sidebar-logo-text">PARKLY</span>
       </div>
 
       {/* Navigation */}
