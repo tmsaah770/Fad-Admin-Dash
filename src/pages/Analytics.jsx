@@ -81,33 +81,47 @@ export default function Analytics() {
     let isMounted = true;
     async function loadAnalytics() {
       try {
-        const [summaryRes, ownersRes, revenueRes] = await Promise.allSettled([
-          dashboardService.getSummary(),
+        const [ownersRes, parkingsRes, resRes, revenueRes] = await Promise.allSettled([
           import('../services/ownersService').then(m => m.ownersService.getOwners()),
+          parkingsService.getParkings(),
+          import('../services/reservationsService').then(m => m.reservationsService.getReservations()),
           dashboardService.getRevenue('monthly'),
         ]);
 
         if (!isMounted) return;
-
-        let summary = {};
-        if (summaryRes.status === 'fulfilled' && summaryRes.value?.data) {
-          summary = summaryRes.value.data;
-        }
-
-        const totalRev = summary.totalRevenue ?? summary.todayRevenue ?? 0;
-        const totalBookings = summary.totalBookings ?? summary.todayBookingsCount ?? 0;
-        const occupancy = summary.occupancyPercentage ?? 0;
 
         let ownersList = [];
         if (ownersRes.status === 'fulfilled' && ownersRes.value?.data) {
           ownersList = Array.isArray(ownersRes.value.data) ? ownersRes.value.data : (ownersRes.value.data.items || []);
         }
 
+        let parkingsList = [];
+        if (parkingsRes.status === 'fulfilled' && parkingsRes.value?.data) {
+          parkingsList = Array.isArray(parkingsRes.value.data) ? parkingsRes.value.data : (parkingsRes.value.data.items || []);
+        }
+
+        let resList = [];
+        if (resRes.status === 'fulfilled' && resRes.value?.data) {
+          resList = Array.isArray(resRes.value.data) ? resRes.value.data : (resRes.value.data.items || []);
+        }
+
+        const totalRev = resList.reduce((acc, r) => acc + (r.totalPrice || 0), 0) || ownersList.reduce((acc, o) => acc + (o.totalRevenue || 0), 0);
+        const totalBookings = resList.length;
+        
+        let totalSpaces = 0;
+        let availableSpaces = 0;
+        parkingsList.forEach(p => {
+            totalSpaces += (p.totalSpaces || 0);
+            availableSpaces += (p.availableSpaces ?? p.totalSpaces ?? 0);
+        });
+        const occupiedSpaces = totalSpaces - availableSpaces;
+        const occupancy = totalSpaces > 0 ? Math.round((occupiedSpaces / totalSpaces) * 100) : 0;
+
         setStats([
           { id: 'total-revenue', icon: 'DollarSign', value: `$${totalRev.toLocaleString()}`, label: 'TOTAL REVENUE', iconBg: '#ECFDF3', iconColor: '#12B76A' },
           { id: 'total-bookings', icon: 'Calendar', value: String(totalBookings), label: 'TOTAL BOOKINGS', iconBg: '#EEF4FF', iconColor: '#2B76F6' },
           { id: 'avg-occupancy', icon: 'TrendingUp', value: `${occupancy}%`, label: 'AVG OCCUPANCY', iconBg: '#F4EBFF', iconColor: '#7F56D9' },
-          { id: 'active-locations', icon: 'Home', value: String(ownersList.reduce((acc, o) => acc + (o.totalLocations || 0), 0)), label: 'ACTIVE LOCATIONS', iconBg: '#EEF4FF', iconColor: '#2B76F6' },
+          { id: 'active-locations', icon: 'Home', value: String(parkingsList.length), label: 'ACTIVE LOCATIONS', iconBg: '#EEF4FF', iconColor: '#2B76F6' },
         ]);
 
         // Real trend data if provided by API
