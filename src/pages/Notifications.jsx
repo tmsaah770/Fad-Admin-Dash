@@ -44,7 +44,7 @@ export default function Notifications() {
         const items = notifsRes?.data?.items || notifsRes?.data;
         if (Array.isArray(items)) {
           const apiItems = items.map((item, idx) => ({
-            id: item.notificationId || idx + 200,
+            id: item.id || item.notificationId || idx + 200,
             title: item.title || 'Platform Notification',
             description: item.message || item.body || 'System alert.',
             time: item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently',
