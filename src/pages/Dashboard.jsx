@@ -32,52 +32,53 @@ export default function Dashboard() {
 
     async function loadDashboardData() {
       try {
-        const [summaryRes, pStatsRes, uStatsRes, oStatsRes] = await Promise.allSettled([
-          dashboardService.getSummary(),
-          parkingsService.getStats(),
-          import('../services/usersService').then(m => m.usersService.getStats()),
-          import('../services/ownersService').then(m => m.ownersService.getStats())
+        const [usersRes, ownersRes, parkingsRes, resRes, summaryRes] = await Promise.allSettled([
+          import('../services/usersService').then(m => m.usersService.getUsers()),
+          import('../services/ownersService').then(m => m.ownersService.getOwners()),
+          parkingsService.getParkings(),
+          import('../services/reservationsService').then(m => m.reservationsService.getReservations()),
+          dashboardService.getSummary()
         ]);
 
         if (!isMounted) return;
 
-        let summary = {};
-        if (summaryRes.status === 'fulfilled' && summaryRes.value?.data) {
-          summary = summaryRes.value.data;
-        }
-        
-        let pStats = {};
-        if (pStatsRes.status === 'fulfilled' && pStatsRes.value?.data) {
-          pStats = pStatsRes.value.data;
-        }
+        let usersList = usersRes.status === 'fulfilled' && usersRes.value?.data ? (Array.isArray(usersRes.value.data) ? usersRes.value.data : (usersRes.value.data.items || [])) : [];
+        let ownersList = ownersRes.status === 'fulfilled' && ownersRes.value?.data ? (Array.isArray(ownersRes.value.data) ? ownersRes.value.data : (ownersRes.value.data.items || [])) : [];
+        let parkingsList = parkingsRes.status === 'fulfilled' && parkingsRes.value?.data ? (Array.isArray(parkingsRes.value.data) ? parkingsRes.value.data : (parkingsRes.value.data.items || [])) : [];
+        let resList = resRes.status === 'fulfilled' && resRes.value?.data ? (Array.isArray(resRes.value.data) ? resRes.value.data : (resRes.value.data.items || [])) : [];
 
-        let uStats = {};
-        if (uStatsRes.status === 'fulfilled' && uStatsRes.value?.data) {
-          uStats = uStatsRes.value.data;
-        }
+        const activeUsers = usersList.filter(u => u.status?.toLowerCase() === 'active').length;
+        const activeOwners = ownersList.filter(o => o.status?.toLowerCase() === 'active').length;
 
-        let oStats = {};
-        if (oStatsRes.status === 'fulfilled' && oStatsRes.value?.data) {
-          oStats = oStatsRes.value.data;
-        }
+        let totalSpaces = 0;
+        let availableSpaces = 0;
+        parkingsList.forEach(p => {
+          totalSpaces += (p.totalSpaces || 0);
+          availableSpaces += (p.availableSpaces ?? p.totalSpaces ?? 0);
+        });
 
-        const todayBookings = summary.todayBookingsCount ?? 0;
-        const todayRevenue = summary.todayRevenue ?? 0;
-        const occupancy = summary.occupancyPercentage ?? 0;
-        const activeReservations = summary.activeReservations ?? 0;
+        const occupiedSpaces = totalSpaces - availableSpaces;
+        const occupancy = totalSpaces > 0 ? Math.round((occupiedSpaces / totalSpaces) * 100) : 0;
+
+        const networkRev = resList.reduce((acc, r) => acc + (r.totalPrice || 0), 0) || ownersList.reduce((acc, o) => acc + (o.totalRevenue || 0), 0);
+        const activeReservations = resList.filter(r => r.status?.toLowerCase() === 'active').length;
+
+        let summary = summaryRes.status === 'fulfilled' && summaryRes.value?.data ? summaryRes.value.data : {};
+        const todayBookings = summary.todayBookingsCount || Math.max(resList.length, 0); 
+        const todayRevenue = summary.todayRevenue || Math.max(networkRev, 0);
 
         setRow1([
-          { id: 'total-users', title: 'Total Users', value: String(uStats.totalUsers || 0), change: '0%', isPositive: true, subtext: 'Registered Drivers' },
-          { id: 'active-drivers', title: 'Active Drivers', value: String(uStats.activeUsers || 0), change: '0%', isPositive: true, subtext: 'Active on platform' },
-          { id: 'parking-owners', title: 'Parking Owners', value: String(oStats.totalOwners || 0), change: '0%', isPositive: true, subtext: `${oStats.activeOwners || 0} active owners` },
-          { id: 'locations', title: 'Total Locations', value: String(pStats.totalLocations || 0), change: '0%', isPositive: true, subtext: `${pStats.totalSpaces || 0} total spaces` },
+          { id: 'total-users', title: 'Total Users', value: String(usersList.length), change: '0%', isPositive: true, subtext: 'Registered Drivers' },
+          { id: 'active-drivers', title: 'Active Drivers', value: String(activeUsers), change: '0%', isPositive: true, subtext: 'Active on platform' },
+          { id: 'parking-owners', title: 'Parking Owners', value: String(ownersList.length), change: '0%', isPositive: true, subtext: `${activeOwners} active owners` },
+          { id: 'locations', title: 'Total Locations', value: String(parkingsList.length), change: '0%', isPositive: true, subtext: `${totalSpaces} total spaces` },
         ]);
 
         setRow2([
-          { id: 'total-reservations', title: 'Today Bookings', value: String(todayBookings), change: '0%', isPositive: true, subtext: `${activeReservations} active now` },
-          { id: 'daily-revenue', title: "Today's Revenue", value: `$${todayRevenue.toLocaleString()}`, change: '0%', isPositive: true, subtext: 'Gross revenue today' },
-          { id: 'network-revenue', title: 'Total Network Revenue', value: `$${(pStats.networkRevenue || 0).toLocaleString()}`, change: '0%', isPositive: true, subtext: 'Platform processed' },
-          { id: 'avg-occupancy', title: 'Avg Occupancy', value: `${occupancy}%`, change: '0%', isPositive: true, subtext: `${pStats.totalSpaces || 0} spaces live` },
+          { id: 'total-reservations', title: 'Total Bookings', value: String(todayBookings), change: '0%', isPositive: true, subtext: `${activeReservations} active now` },
+          { id: 'daily-revenue', title: "Total Revenue", value: `$${todayRevenue.toLocaleString()}`, change: '0%', isPositive: true, subtext: 'Platform gross revenue' },
+          { id: 'network-revenue', title: 'Network Revenue', value: `$${networkRev.toLocaleString()}`, change: '0%', isPositive: true, subtext: 'Total processed' },
+          { id: 'avg-occupancy', title: 'Avg Occupancy', value: `${occupancy}%`, change: '0%', isPositive: true, subtext: `${totalSpaces} spaces live` },
         ]);
       } catch (err) {
         console.error('[Dashboard] Live data load error:', err.message);
