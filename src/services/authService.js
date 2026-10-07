@@ -13,6 +13,9 @@ export const authService = {
     const res = await api.post('/api/auth/login', credentials);
     if (res?.data?.token) {
       localStorage.setItem('parkly_token', res.data.token);
+      if (res.data.refreshToken) {
+        localStorage.setItem('parkly_refreshToken', res.data.refreshToken);
+      }
       localStorage.setItem('parkly_user', JSON.stringify(res.data));
     }
     return res;
@@ -29,6 +32,7 @@ export const authService = {
       // ignore
     } finally {
       localStorage.removeItem('parkly_token');
+      localStorage.removeItem('parkly_refreshToken');
       localStorage.removeItem('parkly_user');
     }
   },
