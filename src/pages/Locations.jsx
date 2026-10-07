@@ -65,15 +65,17 @@ export default function Locations() {
             type: item.propertyType || 'Parking Facility',
           }));
           setLocations(mapped);
-        }
 
-        if (statsRes.status === 'fulfilled' && statsRes.value?.data) {
-          const s = statsRes.value.data;
+          // Calculate dynamically from the array
+          const activeLocs = mapped.filter(l => l.status === 'active').length;
+          const totalSpacesSum = mapped.reduce((acc, l) => acc + (Number(l.spaces) || 0), 0);
+          const totalRevSum = mapped.reduce((acc, l) => acc + (parseFloat(l.revenue.replace(/[^0-9.]/g, '')) || 0), 0);
+
           setStats([
-            { id: 'total-locations', icon: 'MapPin', value: String(s.totalLocations || 0), label: 'TOTAL LOCATIONS', iconBg: '#EEF4FF', iconColor: '#2B76F6' },
-            { id: 'active', icon: 'Check', value: String(s.activeLocations || 0), label: 'ACTIVE', iconBg: '#ECFDF3', iconColor: '#12B76A' },
-            { id: 'total-spaces', icon: 'Square', value: String(s.totalSpaces || 0), label: 'TOTAL SPACES', iconBg: '#F4EBFF', iconColor: '#7F56D9' },
-            { id: 'network-revenue', icon: 'DollarSign', value: `$${(s.networkRevenue || 0).toLocaleString()}`, label: 'NETWORK REVENUE', iconBg: '#ECFDF3', iconColor: '#12B76A' },
+            { id: 'total-locations', icon: 'MapPin', value: String(mapped.length), label: 'TOTAL LOCATIONS', iconBg: '#EEF4FF', iconColor: '#2B76F6' },
+            { id: 'active', icon: 'Check', value: String(activeLocs), label: 'ACTIVE', iconBg: '#ECFDF3', iconColor: '#12B76A' },
+            { id: 'total-spaces', icon: 'Square', value: String(totalSpacesSum), label: 'TOTAL SPACES', iconBg: '#F4EBFF', iconColor: '#7F56D9' },
+            { id: 'network-revenue', icon: 'DollarSign', value: `$${totalRevSum.toLocaleString()}`, label: 'NETWORK REVENUE', iconBg: '#ECFDF3', iconColor: '#12B76A' },
           ]);
         }
       } catch (err) {

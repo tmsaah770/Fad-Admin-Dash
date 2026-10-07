@@ -70,15 +70,17 @@ export default function Reservations() {
             paymentMethod: r.paymentMethod || 'N/A',
           }));
           setReservations(mapped);
-        }
 
-        if (statsRes.status === 'fulfilled' && statsRes.value?.data) {
-          const s = statsRes.value.data;
+          // Calculate dynamically from the array
+          const activeRes = mapped.filter(r => r.status === 'active').length;
+          const upcomingRes = mapped.filter(r => r.status === 'upcoming').length;
+          const totalRevSum = mapped.reduce((acc, r) => acc + (parseFloat(r.amount.replace(/[^0-9.]/g, '')) || 0), 0);
+
           setStats([
-            { id: 'total', label: 'TOTAL RESERVATIONS', value: String(s.totalReservations || 0), icon: 'Calendar', iconColor: '#2B76F6', iconBg: '#EEF4FF' },
-            { id: 'active', label: 'ACTIVE NOW', value: String(s.activeReservations || 0), icon: 'Check', iconColor: '#12B76A', iconBg: '#ECFDF3' },
-            { id: 'upcoming', label: 'UPCOMING', value: String(s.upcomingReservations || 0), icon: 'Clock', iconColor: '#7F56D9', iconBg: '#F4EBFF' },
-            { id: 'revenue', label: 'REVENUE PROCESSED', value: `$${(s.totalRevenue || 0).toLocaleString()}`, icon: 'DollarSign', iconColor: '#12B76A', iconBg: '#ECFDF3' },
+            { id: 'total', label: 'TOTAL RESERVATIONS', value: String(mapped.length), icon: 'Calendar', iconColor: '#2B76F6', iconBg: '#EEF4FF' },
+            { id: 'active', label: 'ACTIVE NOW', value: String(activeRes), icon: 'Check', iconColor: '#12B76A', iconBg: '#ECFDF3' },
+            { id: 'upcoming', label: 'UPCOMING', value: String(upcomingRes), icon: 'Clock', iconColor: '#7F56D9', iconBg: '#F4EBFF' },
+            { id: 'revenue', label: 'REVENUE PROCESSED', value: `$${totalRevSum.toLocaleString()}`, icon: 'DollarSign', iconColor: '#12B76A', iconBg: '#ECFDF3' },
           ]);
         }
       } catch (err) {

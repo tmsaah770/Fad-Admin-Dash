@@ -67,15 +67,17 @@ export default function ParkingOwners() {
             color: '#2B76F6'
           }));
           setOwnersList(ownersData);
-        }
-
-        if (statsRes.status === 'fulfilled' && statsRes.value?.data) {
-           const s = statsRes.value.data;
-           setStats([
-            { id: 'total', label: 'TOTAL OWNERS', value: String(s.totalOwners || 0), icon: 'Home', iconColor: '#2B76F6', iconBg: '#EEF4FF' },
-            { id: 'active', label: 'ACTIVE', value: String(s.activeOwners || 0), icon: 'Check', iconColor: '#12B76A', iconBg: '#ECFDF3' },
-            { id: 'pending', label: 'PENDING', value: String(s.pendingOwners || 0), icon: 'Bell', iconColor: '#F79009', iconBg: '#FFF4E5' },
-            { id: 'total-revenue', label: 'TOTAL REVENUE', value: `$${s.totalRevenue || 0}`, icon: 'DollarSign', iconColor: '#12B76A', iconBg: '#ECFDF3' },
+          
+          // Calculate dynamically from the array
+          const activeOwners = ownersData.filter(o => o.status === 'active').length;
+          const pendingOwners = ownersData.filter(o => o.status === 'pending').length;
+          const totalRevNum = ownersData.reduce((acc, o) => acc + (parseFloat(o.revenue.replace('$', '')) || 0), 0);
+          
+          setStats([
+            { id: 'total', label: 'TOTAL OWNERS', value: String(ownersData.length), icon: 'Home', iconColor: '#2B76F6', iconBg: '#EEF4FF' },
+            { id: 'active', label: 'ACTIVE', value: String(activeOwners), icon: 'Check', iconColor: '#12B76A', iconBg: '#ECFDF3' },
+            { id: 'pending', label: 'PENDING', value: String(pendingOwners), icon: 'Bell', iconColor: '#F79009', iconBg: '#FFF4E5' },
+            { id: 'total-revenue', label: 'TOTAL REVENUE', value: `$${totalRevNum.toLocaleString()}`, icon: 'DollarSign', iconColor: '#12B76A', iconBg: '#ECFDF3' },
           ]);
         }
       } catch (err) {
