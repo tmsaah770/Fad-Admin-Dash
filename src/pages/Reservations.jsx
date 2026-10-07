@@ -7,11 +7,13 @@ import {
   X,
   Eye,
 } from 'lucide-react';
-import {
-  reservationsStats,
-  reservationsFilters,
-  reservationsTableData,
-} from '../data/reservationsData';
+const reservationsFilters = [
+  { id: 'all', label: 'All' },
+  { id: 'upcoming', label: 'Upcoming' },
+  { id: 'active', label: 'Active' },
+  { id: 'completed', label: 'Completed' },
+  { id: 'cancelled', label: 'Cancelled' },
+];
 import { reservationsService } from '../services/reservationsService';
 import './Reservations.css';
 
@@ -35,51 +37,57 @@ export default function Reservations() {
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [reservations, setReservations] = useState([]);
   const [stats, setStats] = useState(initialResStats);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch live reservations from Parkly API
   useEffect(() => {
     let isMounted = true;
-    async function fetchReservations() {
+    async function loadData() {
+      setLoading(true);
       try {
-        const res = await reservationsService.getReservations();
+        const [resRes, statsRes] = await Promise.allSettled([
+          reservationsService.getReservations(),
+          reservationsService.getStats()
+        ]);
         if (!isMounted) return;
 
-        if (Array.isArray(res?.data)) {
-          const mapped = res.data.map((r, idx) => ({
-            id: r.reservationId || idx + 500,
-            code: r.qrCode ? `PK-${r.qrCode}` : `PK-${4200 + idx}`,
-            customer: r.userName || 'Driver Customer',
-            initials: (r.userName || 'DC').slice(0, 2).toUpperCase(),
+        if (resRes.status === 'fulfilled' && resRes.value?.data) {
+          const rawData = Array.isArray(resRes.value.data) ? resRes.value.data : (resRes.value.data.items || []);
+          const mapped = rawData.map(r => ({
+            id: r.reservationId || Math.random().toString(),
+            code: r.qrCode ? `PK-${r.qrCode}` : `PK-${r.id || Math.random().toString().slice(2, 6)}`,
+            customer: r.userName || r.customerName || 'Unknown Customer',
+            initials: (r.userName || r.customerName || 'U').slice(0, 2).toUpperCase(),
             color: '#2B76F6',
-            location: r.parkingName || 'Parkly Hub',
-            space: r.spotNumber ? `S${r.spotNumber}` : 'S1',
-            date: r.arrivalTime ? new Date(r.arrivalTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Today',
-            time: `${new Date(r.arrivalTime || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(r.departureTime || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-            duration: '2h',
-            amount: r.totalPrice ? `$${r.totalPrice.toFixed(2)}` : '$10.00',
+            location: r.parkingName || 'Unknown Location',
+            space: r.spotNumber ? `S${r.spotNumber}` : 'N/A',
+            date: r.arrivalTime ? new Date(r.arrivalTime).toLocaleDateString() : 'N/A',
+            time: `${r.arrivalTime ? new Date(r.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''} - ${r.departureTime ? new Date(r.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}`,
+            duration: r.duration || 'N/A',
+            amount: r.totalPrice ? `$${r.totalPrice.toFixed(2)}` : '$0',
             status: (r.status?.toLowerCase() || 'upcoming'),
-            vehicle: 'Vehicle',
-            plate: 'Plate',
-            paymentMethod: 'Credit Card',
+            vehicle: r.vehicleModel || 'N/A',
+            plate: r.licensePlate || 'N/A',
+            paymentMethod: r.paymentMethod || 'N/A',
           }));
           setReservations(mapped);
+        }
 
-          const activeCount = mapped.filter((r) => r.status === 'active').length;
-          const upcomingCount = mapped.filter((r) => r.status === 'upcoming').length;
-          const totalRev = mapped.reduce((acc, r) => acc + (parseFloat(r.amount.replace('$', '')) || 0), 0);
-
+        if (statsRes.status === 'fulfilled' && statsRes.value?.data) {
+          const s = statsRes.value.data;
           setStats([
-            { id: 'total', label: 'TOTAL RESERVATIONS', value: String(mapped.length), icon: 'Calendar', iconColor: '#2B76F6', iconBg: '#EEF4FF' },
-            { id: 'active', label: 'ACTIVE NOW', value: String(activeCount), icon: 'Check', iconColor: '#12B76A', iconBg: '#ECFDF3' },
-            { id: 'upcoming', label: 'UPCOMING', value: String(upcomingCount), icon: 'Clock', iconColor: '#7F56D9', iconBg: '#F4EBFF' },
-            { id: 'revenue', label: 'REVENUE PROCESSED', value: `$${totalRev.toLocaleString()}`, icon: 'DollarSign', iconColor: '#12B76A', iconBg: '#ECFDF3' },
+            { id: 'total', label: 'TOTAL RESERVATIONS', value: String(s.totalReservations || 0), icon: 'Calendar', iconColor: '#2B76F6', iconBg: '#EEF4FF' },
+            { id: 'active', label: 'ACTIVE NOW', value: String(s.activeReservations || 0), icon: 'Check', iconColor: '#12B76A', iconBg: '#ECFDF3' },
+            { id: 'upcoming', label: 'UPCOMING', value: String(s.upcomingReservations || 0), icon: 'Clock', iconColor: '#7F56D9', iconBg: '#F4EBFF' },
+            { id: 'revenue', label: 'REVENUE PROCESSED', value: `$${(s.totalRevenue || 0).toLocaleString()}`, icon: 'DollarSign', iconColor: '#12B76A', iconBg: '#ECFDF3' },
           ]);
         }
       } catch (err) {
-        console.warn('[Reservations] API load error:', err.message);
+        console.error('[Reservations] API load error:', err.message);
+      } finally {
+        if (isMounted) setLoading(false);
       }
     }
-    fetchReservations();
+    loadData();
     return () => { isMounted = false; };
   }, []);
 

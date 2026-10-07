@@ -1,47 +1,55 @@
 // =============================================
-// DASHBOARD SERVICE — /api/Dashboard/*
+// DASHBOARD SERVICE — /api/Admin/dashboard/*
 // =============================================
 
 import { api } from './apiClient';
 
 export const dashboardService = {
   /**
-   * Aggregated summary (occupancy, total spaces, bookings count, today revenue)
-   * GET /api/Dashboard/summary
+   * Aggregated summary (platform-wide)
+   * GET /api/Admin/dashboard/summary
    */
   async getSummary() {
-    return api.get('/api/Dashboard/summary');
+    return api.get('/api/Admin/dashboard/summary');
   },
 
   /**
    * Revenue chart data
-   * GET /api/Dashboard/revenue?period=monthly
+   * GET /api/Admin/dashboard/revenue
    */
   async getRevenue(period = 'monthly') {
-    return api.get(`/api/Dashboard/revenue?period=${period}`);
+    return api.get(`/api/Admin/dashboard/revenue?period=${period}`);
   },
 
   /**
-   * Locations summary for dashboard
-   * GET /api/Dashboard/locations
+   * Bookings chart data
+   * GET /api/Admin/dashboard/bookings-chart
    */
-  async getLocations() {
-    return api.get('/api/Dashboard/locations');
+  async getBookingsChart(period = 'monthly') {
+    return api.get(`/api/Admin/dashboard/bookings-chart?period=${period}`);
   },
 
   /**
-   * Today's reservations
-   * GET /api/Dashboard/reservations/today
-   */
-  async getTodayReservations() {
-    return api.get('/api/Dashboard/reservations/today');
-  },
-
-  /**
-   * Recent activity feed
-   * GET /api/Dashboard/activity
+   * Recent activity feed (platform-wide)
+   * GET /api/Admin/dashboard/activity
    */
   async getActivity() {
-    return api.get('/api/Dashboard/activity');
+    return api.get('/api/Admin/dashboard/activity');
   },
+
+  /**
+   * Pending approvals
+   * GET /api/Admin/dashboard/pending-approvals
+   */
+  async getPendingApprovals(page = 1, pageSize = 10) {
+    return api.get(`/api/Admin/dashboard/pending-approvals?page=${page}&pageSize=${pageSize}`);
+  },
+
+  /**
+   * Approves or rejects a pending parking owner
+   * PUT /api/Admin/dashboard/approvals/{ownerId}
+   */
+  async updateApproval(ownerId, statusData) {
+    return api.put(`/api/Admin/dashboard/approvals/${ownerId}`, statusData);
+  }
 };

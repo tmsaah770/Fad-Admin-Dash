@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import {
   UserPlus, FileText, Calendar, Zap, TrendingUp, Plus
 } from 'lucide-react';
-import { recentActivity } from '../data/mockData';
 import { dashboardService } from '../services/dashboardService';
 import './RecentActivity.css';
 
@@ -11,7 +10,7 @@ const iconMap = {
 };
 
 export default function RecentActivity() {
-  const [activities, setActivities] = useState(recentActivity);
+  const [activities, setActivities] = useState([]);
 
   useEffect(() => {
     let isMounted = true;

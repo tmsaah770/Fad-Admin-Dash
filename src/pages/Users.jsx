@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Search, CheckCircle, Bell, XCircle, SlidersHorizontal, Eye, Users as UsersIcon
 } from 'lucide-react';
+import { usersService } from '../services/usersService';
 import './Users.css';
 
 const iconMap = { CheckCircle, Bell, XCircle };
@@ -11,6 +12,57 @@ export default function Users() {
   const [activeFilter, setActiveFilter] = useState('All Statuses');
   const [searchQuery, setSearchQuery] = useState('');
   const [usersList, setUsersList] = useState([]);
+  const [stats, setStats] = useState({ total: 0, active: 0, pending: 0, suspended: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      setIsLoading(true);
+      try {
+        const [usersRes, statsRes] = await Promise.allSettled([
+          usersService.getUsers(),
+          usersService.getStats()
+        ]);
+        
+        if (!isMounted) return;
+
+        if (usersRes.status === 'fulfilled' && usersRes.value?.data) {
+          const rawData = Array.isArray(usersRes.value.data) ? usersRes.value.data : (usersRes.value.data.items || []);
+          const mapped = rawData.map(u => ({
+            id: u.id || Math.random().toString(),
+            name: u.fullName || u.userName || 'Unknown User',
+            email: u.email || 'No email',
+            phone: u.phoneNumber || 'N/A',
+            registered: u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A',
+            reservations: u.bookings || 0,
+            spent: u.totalSpent ? `$${u.totalSpent}` : '$0',
+            lastActive: u.lastActive ? new Date(u.lastActive).toLocaleDateString() : 'Recently',
+            status: u.status ? u.status.toLowerCase() : 'active',
+            initials: (u.fullName || u.userName || 'U').slice(0, 2).toUpperCase(),
+            color: '#2B76F6'
+          }));
+          setUsersList(mapped);
+        }
+
+        if (statsRes.status === 'fulfilled' && statsRes.value?.data) {
+           const s = statsRes.value.data;
+           setStats({
+             total: s.totalUsers ?? 0,
+             active: s.activeUsers ?? 0,
+             pending: s.pendingUsers ?? 0,
+             suspended: s.suspendedUsers ?? 0,
+           });
+        }
+      } catch (e) {
+        console.error('Failed to load users:', e);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+    loadData();
+    return () => { isMounted = false; };
+  }, []);
 
   const filteredUsers = usersList.filter((user) => {
     const matchesFilter =
@@ -25,15 +77,11 @@ export default function Users() {
     return matchesFilter && matchesSearch;
   });
 
-  const activeCount = usersList.filter((u) => u.status === 'active').length;
-  const pendingCount = usersList.filter((u) => u.status === 'pending').length;
-  const suspendedCount = usersList.filter((u) => u.status === 'suspended').length;
-
   const realStats = [
-    { id: 'total', label: 'TOTAL DRIVERS', value: String(usersList.length), icon: 'CheckCircle', iconColor: '#2B76F6', iconBg: '#EEF4FF' },
-    { id: 'active', label: 'ACTIVE', value: String(activeCount), icon: 'CheckCircle', iconColor: '#12B76A', iconBg: '#ECFDF3' },
-    { id: 'pending', label: 'PENDING', value: String(pendingCount), icon: 'Bell', iconColor: '#F79009', iconBg: '#FFF4E5' },
-    { id: 'suspended', label: 'SUSPENDED', value: String(suspendedCount), icon: 'XCircle', iconColor: '#D92D20', iconBg: '#FEF3F2' },
+    { id: 'total', label: 'TOTAL DRIVERS', value: String(stats.total), icon: 'CheckCircle', iconColor: '#2B76F6', iconBg: '#EEF4FF' },
+    { id: 'active', label: 'ACTIVE', value: String(stats.active), icon: 'CheckCircle', iconColor: '#12B76A', iconBg: '#ECFDF3' },
+    { id: 'pending', label: 'PENDING', value: String(stats.pending), icon: 'Bell', iconColor: '#F79009', iconBg: '#FFF4E5' },
+    { id: 'suspended', label: 'SUSPENDED', value: String(stats.suspended), icon: 'XCircle', iconColor: '#D92D20', iconBg: '#FEF3F2' },
   ];
 
   return (
@@ -42,7 +90,7 @@ export default function Users() {
       <div className="users-page-header">
         <div>
           <h1 className="users-page-title">Users Management</h1>
-          <p className="users-page-subtitle">{usersList.length} registered drivers on the platform</p>
+          <p className="users-page-subtitle">{stats.total} registered drivers on the platform</p>
         </div>
         <div className="users-search">
           <Search size={16} strokeWidth={1.8} className="users-search-icon" />
@@ -106,7 +154,9 @@ export default function Users() {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.length === 0 ? (
+              {isLoading ? (
+                <tr><td colSpan="9" style={{textAlign: 'center', padding: '20px'}}>Loading...</td></tr>
+              ) : filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan="9" style={{ textAlign: 'center', padding: '48px 16px', color: '#6F767E' }}>
                     <UsersIcon size={36} color="#9A9FA5" style={{ margin: '0 auto 12px auto', display: 'block' }} />
@@ -153,3 +203,4 @@ export default function Users() {
     </div>
   );
 }
+

@@ -13,7 +13,7 @@ import {
   Mail,
   Calendar,
 } from 'lucide-react';
-import { parkingsService } from '../services/parkingsService';
+import { ownersService } from '../services/ownersService';
 import './ParkingOwners.css';
 
 const iconMap = {
@@ -39,49 +39,50 @@ export default function ParkingOwners() {
 
   useEffect(() => {
     let isMounted = true;
-    async function loadOwners() {
+    async function loadData() {
       try {
-        const res = await parkingsService.getParkings();
-        if (isMounted && Array.isArray(res?.data)) {
-          const ownerMap = {};
-          res.data.forEach((p, idx) => {
-            const oId = p.ownerId || `owner-${idx}`;
-            if (!ownerMap[oId]) {
-              ownerMap[oId] = {
-                id: oId,
-                name: `Owner ${oId.slice(0, 8)}`,
-                business: p.name || 'Commercial Parking Facility',
-                email: `owner_${oId.slice(0, 6)}@parkly.com`,
-                phone: '+20 100 000 0000',
-                registered: 'Live Registered',
-                locations: 0,
-                spaces: 0,
-                revenue: '$0',
-                status: p.isOpenNow ? 'active' : 'active',
-                initials: (p.name || 'PO').slice(0, 2).toUpperCase(),
-                color: '#2B76F6',
-              };
-            }
-            ownerMap[oId].locations += 1;
-            ownerMap[oId].spaces += Number(p.totalSpaces) || 0;
-          });
+        const [ownersRes, statsRes] = await Promise.allSettled([
+          ownersService.getOwners(),
+          ownersService.getStats()
+        ]);
+        
+        if (!isMounted) return;
 
-          const list = Object.values(ownerMap);
-          setOwnersList(list);
+        let ownersData = [];
+        if (ownersRes.status === 'fulfilled' && ownersRes.value?.data) {
+          const rawData = Array.isArray(ownersRes.value.data) ? ownersRes.value.data : (ownersRes.value.data.items || []);
+          ownersData = rawData.map(o => ({
+            id: o.id || o.ownerId || Math.random().toString(),
+            name: o.fullName || o.userName || 'Unknown Owner',
+            business: o.businessName || 'Parking Facility',
+            email: o.email || 'N/A',
+            phone: o.phoneNumber || 'N/A',
+            city: o.city || 'N/A',
+            registered: o.createdAt ? new Date(o.createdAt).toLocaleDateString() : 'N/A',
+            locations: o.totalLocations || 0,
+            spaces: o.totalSpaces || 0,
+            revenue: o.totalRevenue ? `$${o.totalRevenue}` : '$0',
+            status: o.status ? o.status.toLowerCase() : 'active',
+            initials: (o.fullName || o.userName || 'PO').slice(0, 2).toUpperCase(),
+            color: '#2B76F6'
+          }));
+          setOwnersList(ownersData);
+        }
 
-          const activeCount = list.filter((o) => o.status === 'active').length;
-          setStats([
-            { id: 'total', label: 'TOTAL OWNERS', value: String(list.length), icon: 'Home', iconColor: '#2B76F6', iconBg: '#EEF4FF' },
-            { id: 'active', label: 'ACTIVE', value: String(activeCount), icon: 'Check', iconColor: '#12B76A', iconBg: '#ECFDF3' },
-            { id: 'pending', label: 'PENDING', value: '0', icon: 'Bell', iconColor: '#F79009', iconBg: '#FFF4E5' },
-            { id: 'total-revenue', label: 'TOTAL REVENUE', value: '$0', icon: 'DollarSign', iconColor: '#12B76A', iconBg: '#ECFDF3' },
+        if (statsRes.status === 'fulfilled' && statsRes.value?.data) {
+           const s = statsRes.value.data;
+           setStats([
+            { id: 'total', label: 'TOTAL OWNERS', value: String(s.totalOwners || 0), icon: 'Home', iconColor: '#2B76F6', iconBg: '#EEF4FF' },
+            { id: 'active', label: 'ACTIVE', value: String(s.activeOwners || 0), icon: 'Check', iconColor: '#12B76A', iconBg: '#ECFDF3' },
+            { id: 'pending', label: 'PENDING', value: String(s.pendingOwners || 0), icon: 'Bell', iconColor: '#F79009', iconBg: '#FFF4E5' },
+            { id: 'total-revenue', label: 'TOTAL REVENUE', value: `$${s.totalRevenue || 0}`, icon: 'DollarSign', iconColor: '#12B76A', iconBg: '#ECFDF3' },
           ]);
         }
       } catch (err) {
-        console.warn('[ParkingOwners] Error:', err.message);
+        console.error('[ParkingOwners] load error:', err.message);
       }
     }
-    loadOwners();
+    loadData();
     return () => { isMounted = false; };
   }, []);
 

@@ -32,25 +32,33 @@ export default function Dashboard() {
 
     async function loadDashboardData() {
       try {
-        const [summaryRes, parkingsRes] = await Promise.allSettled([
+        const [summaryRes, pStatsRes, uStatsRes, oStatsRes] = await Promise.allSettled([
           dashboardService.getSummary(),
-          parkingsService.getParkings(),
+          parkingsService.getStats(),
+          import('../services/usersService').then(m => m.usersService.getStats()),
+          import('../services/ownersService').then(m => m.ownersService.getStats())
         ]);
 
         if (!isMounted) return;
 
-        let parkingsList = [];
-        if (parkingsRes.status === 'fulfilled' && Array.isArray(parkingsRes.value?.data)) {
-          parkingsList = parkingsRes.value.data;
-        }
-
-        const uniqueOwners = new Set(parkingsList.map((p) => p.ownerId).filter(Boolean));
-        const totalSpaces = parkingsList.reduce((acc, p) => acc + (Number(p.totalSpaces) || 0), 0);
-        const totalLocations = parkingsList.length;
-
         let summary = {};
         if (summaryRes.status === 'fulfilled' && summaryRes.value?.data) {
           summary = summaryRes.value.data;
+        }
+        
+        let pStats = {};
+        if (pStatsRes.status === 'fulfilled' && pStatsRes.value?.data) {
+          pStats = pStatsRes.value.data;
+        }
+
+        let uStats = {};
+        if (uStatsRes.status === 'fulfilled' && uStatsRes.value?.data) {
+          uStats = uStatsRes.value.data;
+        }
+
+        let oStats = {};
+        if (oStatsRes.status === 'fulfilled' && oStatsRes.value?.data) {
+          oStats = oStatsRes.value.data;
         }
 
         const todayBookings = summary.todayBookingsCount ?? 0;
@@ -59,20 +67,20 @@ export default function Dashboard() {
         const activeReservations = summary.activeReservations ?? 0;
 
         setRow1([
-          { id: 'total-users', title: 'Total Users', value: '0', change: '0%', isPositive: true, subtext: 'Registered Drivers' },
-          { id: 'active-drivers', title: 'Active Drivers', value: '0', change: '0%', isPositive: true, subtext: 'Active on platform' },
-          { id: 'parking-owners', title: 'Parking Owners', value: String(uniqueOwners.size), change: `${uniqueOwners.size > 0 ? '+' : ''}${uniqueOwners.size}`, isPositive: true, subtext: `${uniqueOwners.size} registered owners` },
-          { id: 'locations', title: 'Total Locations', value: String(totalLocations), change: `${totalLocations > 0 ? '+' : ''}${totalLocations}`, isPositive: true, subtext: `${totalSpaces} total spaces` },
+          { id: 'total-users', title: 'Total Users', value: String(uStats.totalUsers || 0), change: '0%', isPositive: true, subtext: 'Registered Drivers' },
+          { id: 'active-drivers', title: 'Active Drivers', value: String(uStats.activeUsers || 0), change: '0%', isPositive: true, subtext: 'Active on platform' },
+          { id: 'parking-owners', title: 'Parking Owners', value: String(oStats.totalOwners || 0), change: '0%', isPositive: true, subtext: `${oStats.activeOwners || 0} active owners` },
+          { id: 'locations', title: 'Total Locations', value: String(pStats.totalLocations || 0), change: '0%', isPositive: true, subtext: `${pStats.totalSpaces || 0} total spaces` },
         ]);
 
         setRow2([
           { id: 'total-reservations', title: 'Today Bookings', value: String(todayBookings), change: '0%', isPositive: true, subtext: `${activeReservations} active now` },
           { id: 'daily-revenue', title: "Today's Revenue", value: `$${todayRevenue.toLocaleString()}`, change: '0%', isPositive: true, subtext: 'Gross revenue today' },
-          { id: 'network-revenue', title: 'Total Network Revenue', value: `$${todayRevenue.toLocaleString()}`, change: '0%', isPositive: true, subtext: 'Platform processed' },
-          { id: 'avg-occupancy', title: 'Avg Occupancy', value: `${occupancy}%`, change: '0%', isPositive: true, subtext: `${totalSpaces} spaces live` },
+          { id: 'network-revenue', title: 'Total Network Revenue', value: `$${(pStats.networkRevenue || 0).toLocaleString()}`, change: '0%', isPositive: true, subtext: 'Platform processed' },
+          { id: 'avg-occupancy', title: 'Avg Occupancy', value: `${occupancy}%`, change: '0%', isPositive: true, subtext: `${pStats.totalSpaces || 0} spaces live` },
         ]);
       } catch (err) {
-        console.warn('[Dashboard] Live data load error:', err.message);
+        console.error('[Dashboard] Live data load error:', err.message);
       }
     }
 

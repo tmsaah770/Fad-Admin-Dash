@@ -8,7 +8,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { revenueChartData } from '../data/mockData';
 import { dashboardService } from '../services/dashboardService';
 import './RevenueChart.css';
 

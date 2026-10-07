@@ -10,7 +10,6 @@ import {
   Eye,
   X,
 } from 'lucide-react';
-import { locationsStats, locationsTableData } from '../data/locationsData';
 import { parkingsService } from '../services/parkingsService';
 import './Locations.css';
 
@@ -27,58 +26,64 @@ export default function Locations() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const [locations, setLocations] = useState(locationsTableData);
-  const [stats, setStats] = useState(locationsStats);
-  const [loading, setLoading] = useState(false);
+  const [locations, setLocations] = useState([]);
+  const [stats, setStats] = useState([
+    { id: 'total-locations', icon: 'MapPin', value: '0', label: 'TOTAL LOCATIONS', iconColor: '#2B76F6', iconBg: '#EEF4FF' },
+    { id: 'active-locations', icon: 'Check', value: '0', label: 'ACTIVE', iconColor: '#12B76A', iconBg: '#ECFDF3' },
+    { id: 'total-spaces', icon: 'Square', value: '0', label: 'TOTAL SPACES', iconColor: '#7F56D9', iconBg: '#F4EBFF' },
+    { id: 'est-revenue', icon: 'DollarSign', value: '$0', label: 'EST. REVENUE', iconColor: '#12B76A', iconBg: '#ECFDF3' },
+  ]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch live locations from Parkly backend API: GET /api/Parkings
   useEffect(() => {
     let isMounted = true;
-    async function fetchParkings() {
+    async function loadData() {
       setLoading(true);
       try {
-        const response = await parkingsService.getParkings();
-        const apiData = response?.data;
+        const [locationsRes, statsRes] = await Promise.allSettled([
+          parkingsService.getParkings(),
+          parkingsService.getStats()
+        ]);
 
-        if (isMounted && Array.isArray(apiData) && apiData.length > 0) {
-          // Map backend DTO to UI model
-          const mapped = apiData.map((item, idx) => ({
-            id: item.parkingId || idx + 100,
-            name: item.name || 'Parkly Hub',
-            owner: 'Al-Rashid Parking LLC',
-            city: item.address?.includes(',') ? item.address.split(',')[1].trim() : (item.address || 'New York, NY'),
-            address: item.address || 'Central District',
-            spaces: item.totalSpaces || 50,
-            avail: item.availableSpaces ?? Math.floor((item.totalSpaces || 50) * 0.35),
-            priceHr: item.minHourlyRate ? `$${item.minHourlyRate.toFixed(2)}` : '$3.50',
-            revenue: `$${((item.totalSpaces || 50) * 125).toLocaleString()}`,
-            rating: item.averageRating ? item.averageRating.toFixed(1) : '4.5',
-            status: item.isOpenNow ? 'active' : 'active',
-            features: item.features?.length ? item.features : ['Covered Parking', '24/7 Access', 'CCTV Security'],
-            type: 'Smart Facility',
+        if (!isMounted) return;
+
+        if (locationsRes.status === 'fulfilled' && locationsRes.value?.data) {
+          const rawData = Array.isArray(locationsRes.value.data) ? locationsRes.value.data : (locationsRes.value.data.items || []);
+          const mapped = rawData.map(item => ({
+            id: item.parkingId || Math.random().toString(),
+            name: item.name || 'Unnamed Location',
+            owner: item.ownerName || 'Unknown Owner',
+            city: item.city || (item.address?.includes(',') ? item.address.split(',')[1].trim() : 'Unknown'),
+            address: item.address || 'No Address',
+            spaces: item.totalSpaces || 0,
+            avail: item.availableSpaces ?? 0,
+            priceHr: item.minHourlyRate ? `$${item.minHourlyRate.toFixed(2)}` : '$0',
+            revenue: item.totalRevenue ? `$${item.totalRevenue.toLocaleString()}` : '$0',
+            rating: item.averageRating ? item.averageRating.toFixed(1) : 'N/A',
+            status: item.isOpenNow ? 'active' : 'inactive',
+            features: item.features || [],
+            type: item.propertyType || 'Parking Facility',
           }));
-
-          // Set pure live data from backend API
           setLocations(mapped);
+        }
 
-          // Update stats dynamically from live data
-          const activeCount = mapped.filter(c => c.status === 'active').length;
-          const totalSpacesSum = mapped.reduce((acc, c) => acc + (Number(c.spaces) || 0), 0);
+        if (statsRes.status === 'fulfilled' && statsRes.value?.data) {
+          const s = statsRes.value.data;
           setStats([
-            { id: 'total-locations', icon: 'MapPin', value: String(mapped.length), label: 'TOTAL LOCATIONS', iconBg: '#EEF4FF', iconColor: '#2B76F6' },
-            { id: 'active', icon: 'Check', value: String(activeCount), label: 'ACTIVE', iconBg: '#ECFDF3', iconColor: '#12B76A' },
-            { id: 'total-spaces', icon: 'Square', value: String(totalSpacesSum), label: 'TOTAL SPACES', iconBg: '#F4EBFF', iconColor: '#7F56D9' },
-            { id: 'network-revenue', icon: 'DollarSign', value: `$${(totalSpacesSum * 15).toLocaleString()}`, label: 'NETWORK REVENUE', iconBg: '#ECFDF3', iconColor: '#12B76A' },
+            { id: 'total-locations', icon: 'MapPin', value: String(s.totalLocations || 0), label: 'TOTAL LOCATIONS', iconBg: '#EEF4FF', iconColor: '#2B76F6' },
+            { id: 'active', icon: 'Check', value: String(s.activeLocations || 0), label: 'ACTIVE', iconBg: '#ECFDF3', iconColor: '#12B76A' },
+            { id: 'total-spaces', icon: 'Square', value: String(s.totalSpaces || 0), label: 'TOTAL SPACES', iconBg: '#F4EBFF', iconColor: '#7F56D9' },
+            { id: 'network-revenue', icon: 'DollarSign', value: `$${(s.networkRevenue || 0).toLocaleString()}`, label: 'NETWORK REVENUE', iconBg: '#ECFDF3', iconColor: '#12B76A' },
           ]);
         }
       } catch (err) {
-        console.warn('[Locations] Using fallback locations data:', err.message);
+        console.error('[Locations] load error:', err.message);
       } finally {
         if (isMounted) setLoading(false);
       }
     }
 
-    fetchParkings();
+    loadData();
     return () => { isMounted = false; };
   }, []);
 

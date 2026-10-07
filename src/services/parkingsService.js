@@ -1,63 +1,40 @@
 // =============================================
-// PARKINGS (LOCATIONS) SERVICE — /api/Parkings/*
+// PARKINGS (LOCATIONS) SERVICE — /api/Admin/locations/*
 // =============================================
 
 import { api } from './apiClient';
 
 export const parkingsService = {
   /**
-   * Get all parking facilities
-   * GET /api/Parkings
+   * Returns aggregated statistics for the Parking Locations page
+   * GET /api/Admin/locations/stats
    */
-  async getParkings() {
-    return api.get('/api/Parkings');
+  async getStats() {
+    return api.get('/api/Admin/locations/stats');
   },
 
   /**
-   * Get parking details by ID
-   * GET /api/Parkings/{id}/details
+   * Returns a paginated, filterable, and searchable list of parking locations
+   * GET /api/Admin/locations
    */
-  async getParkingDetails(id) {
-    return api.get(`/api/Parkings/${id}/details`);
+  async getParkings(params) {
+    const query = new URLSearchParams(params).toString();
+    return api.get(`/api/Admin/locations${query ? `?${query}` : ''}`);
   },
 
   /**
-   * Get available spaces count
-   * GET /api/Parkings/{id}/available
+   * Returns detailed profile information for a specific parking location
+   * GET /api/Admin/locations/{parkingId}
    */
-  async getAvailableSpaces(id) {
-    return api.get(`/api/Parkings/${id}/available`);
+  async getParkingDetails(parkingId) {
+    return api.get(`/api/Admin/locations/${parkingId}`);
   },
 
   /**
-   * Search parkings
-   * GET /api/Parkings/search?query=...
+   * Updates the operational status of a parking location ("Active" or "Inactive")
+   * PUT /api/Admin/locations/{parkingId}/status
    */
-  async searchParkings(query) {
-    return api.get(`/api/Parkings/search?query=${encodeURIComponent(query)}`);
-  },
-
-  /**
-   * Create a new parking facility
-   * POST /api/Parkings
-   */
-  async createParking(data) {
-    return api.post('/api/Parkings', data);
-  },
-
-  /**
-   * Update parking facility
-   * PUT /api/Parkings/{id}
-   */
-  async updateParking(id, data) {
-    return api.put(`/api/Parkings/${id}`, data);
-  },
-
-  /**
-   * Delete parking facility
-   * DELETE /api/Parkings/{id}
-   */
-  async deleteParking(id) {
-    return api.del(`/api/Parkings/${id}`);
-  },
+  async updateLocationStatus(parkingId, statusData) {
+    return api.put(`/api/Admin/locations/${parkingId}/status`, statusData);
+  }
 };

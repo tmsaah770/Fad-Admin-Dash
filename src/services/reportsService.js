@@ -1,31 +1,25 @@
 // =============================================
-// REPORTS & ANALYTICS SERVICE — /api/reports/*
+// REPORTS & ANALYTICS SERVICE — /api/Admin/analytics
 // =============================================
 
 import { api } from './apiClient';
 
 export const reportsService = {
   /**
-   * Get revenue report data
-   * GET /api/reports/revenue
+   * Returns platform-wide reports and analytics
+   * GET /api/Admin/analytics
    */
-  async getRevenueReport(startDate, endDate) {
-    const query = new URLSearchParams();
-    if (startDate) query.append('startDate', startDate);
-    if (endDate) query.append('endDate', endDate);
-    const qs = query.toString() ? `?${query.toString()}` : '';
-    return api.get(`/api/reports/revenue${qs}`);
+  async getAnalytics(params) {
+    const query = new URLSearchParams(params).toString();
+    return api.get(`/api/Admin/analytics${query ? `?${query}` : ''}`);
   },
 
   /**
-   * Download revenue CSV export
-   * GET /api/reports/revenue/export
+   * Exports platform-wide analytics and owner revenue breakdown as a CSV
+   * GET /api/Admin/analytics/export
    */
-  async exportRevenueCsv(startDate, endDate) {
-    const query = new URLSearchParams();
-    if (startDate) query.append('startDate', startDate);
-    if (endDate) query.append('endDate', endDate);
-    const qs = query.toString() ? `?${query.toString()}` : '';
-    return api.get(`/api/reports/revenue/export${qs}`);
-  },
+  async exportAnalyticsCsv(params) {
+    const query = new URLSearchParams(params).toString();
+    return api.get(`/api/Admin/analytics/export${query ? `?${query}` : ''}`);
+  }
 };
