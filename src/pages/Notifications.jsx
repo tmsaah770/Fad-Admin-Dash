@@ -45,16 +45,48 @@ export default function Notifications() {
         if (Array.isArray(items)) {
           const apiItems = items.map((item, idx) => {
             const typeStr = item.type ? String(item.type) : 'alert';
+            let mappedCategory = 'alert';
+            let iconName = 'Zap';
+            let iconBg = '#FFF4E5';
+            let iconColor = '#F79009';
+
+            if (typeStr.toLowerCase() === 'booking') {
+              mappedCategory = 'reservation';
+              iconName = 'Calendar';
+              iconBg = '#F4EBFF';
+              iconColor = '#7F56D9';
+            } else if (typeStr.toLowerCase() === 'cancellation') {
+              mappedCategory = 'cancellation';
+              iconName = 'X';
+              iconBg = '#FEF3F2';
+              iconColor = '#D92D20';
+            } else if (typeStr.toLowerCase() === 'alert') {
+              mappedCategory = 'alert';
+              iconName = 'Zap';
+              iconBg = '#FEF3F2';
+              iconColor = '#D92D20';
+            } else if (typeStr.toLowerCase() === 'update') {
+              mappedCategory = 'alert';
+              iconName = 'Zap';
+              iconBg = '#EEF4FF';
+              iconColor = '#2B76F6';
+            } else if (typeStr.toLowerCase() === 'user' || typeStr.toLowerCase() === 'driver' || typeStr.toLowerCase() === 'owner') {
+              mappedCategory = typeStr.toLowerCase();
+              iconName = 'User';
+              iconBg = '#ECFDF3';
+              iconColor = '#12B76A';
+            }
+
             return {
               id: item.id || item.notificationId || idx + 200,
               title: item.title || 'Platform Notification',
               description: item.message || item.body || 'System alert.',
               time: item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently',
-              category: typeStr.toLowerCase(),
+              category: mappedCategory,
               unread: !item.isRead,
-              icon: typeStr === 'User' ? 'User' : typeStr === 'Reservation' ? 'Calendar' : 'Zap',
-              iconBg: typeStr === 'User' ? '#EEF4FF' : '#FFF4E5',
-              iconColor: typeStr === 'User' ? '#2B76F6' : '#F79009',
+              icon: iconName,
+              iconBg: iconBg,
+              iconColor: iconColor,
             };
           });
           setNotifications(apiItems);

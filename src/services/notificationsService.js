@@ -9,8 +9,8 @@ export const notificationsService = {
    * Get paginated notifications
    * GET /api/Notifications?pageNumber=1&pageSize=20
    */
-  async getNotifications(pageNumber = 1, pageSize = 20) {
-    return api.get(`/api/Notifications?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+  async getNotifications(page = 1, pageSize = 20) {
+    return api.get(`/api/Notifications?page=${page}&pageSize=${pageSize}`);
   },
 
   /**

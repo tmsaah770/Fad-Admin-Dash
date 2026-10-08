@@ -37,6 +37,16 @@
   font-weight: 800;
   color: #2B76F6;
   letter-spacing: 0.5px;
+  flex: 1;
+}
+
+.sidebar-close-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 4px;
 }
 
 /* ---- Navigation ---- */
@@ -153,4 +163,22 @@
 .sidebar-logout-btn:hover {
   background: #FEE4E2;
   color: #D92D20;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform var(--transition-normal);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }

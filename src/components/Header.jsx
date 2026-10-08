@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, LogOut, Settings as SettingsIcon, User } from 'lucide-react';
+import { Menu, Search, Bell, LogOut, Settings as SettingsIcon, User } from 'lucide-react';
 import { authService } from '../services/authService';
 import { notificationsService } from '../services/notificationsService';
 import './Header.css';
 
-export default function Header() {
+export default function Header({ onMenuClick }) {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -99,15 +99,20 @@ export default function Header() {
 
   return (
     <header className="header" id="header">
-      {/* Search Bar */}
-      <div className="header-search">
-        <Search size={18} strokeWidth={1.8} className="header-search-icon" />
-        <input
-          type="text"
-          placeholder="Search..."
-          className="header-search-input"
-          id="header-search-input"
-        />
+      <div className="header-left">
+        <button className="mobile-menu-btn" onClick={onMenuClick}>
+          <Menu size={24} strokeWidth={1.8} />
+        </button>
+        {/* Search Bar */}
+        <div className="header-search">
+          <Search size={18} strokeWidth={1.8} className="header-search-icon" />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="header-search-input"
+            id="header-search-input"
+          />
+        </div>
       </div>
 
       {/* Right Section */}

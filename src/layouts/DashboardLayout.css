@@ -21,3 +21,33 @@
   padding: 28px 32px;
   overflow-y: auto;
 }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 40, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 90;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+  .dashboard-main {
+    margin-left: 0;
+  }
+  
+  .dashboard-content {
+    padding: 20px 16px;
+  }
+  
+  .sidebar-overlay.open {
+    display: block;
+    animation: overlayFadeIn var(--transition-normal);
+  }
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

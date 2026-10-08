@@ -28,8 +28,9 @@ const iconMap = {
 };
 
 import logoImg from '../assets/dash-logo.WEBP';
+import { X } from 'lucide-react';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
@@ -111,12 +112,20 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="sidebar" id="sidebar">
-      {/* Logo */}
-      <div className="sidebar-logo">
-        <img src={logoImg} alt="Parkly Logo" className="sidebar-logo-img" />
-        <span className="sidebar-logo-text">PARKLY</span>
-      </div>
+    <>
+      <div 
+        className={`sidebar-overlay ${isOpen ? 'open' : ''}`} 
+        onClick={() => setIsOpen(false)}
+      />
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`} id="sidebar">
+        {/* Logo */}
+        <div className="sidebar-logo">
+          <img src={logoImg} alt="Parkly Logo" className="sidebar-logo-img" />
+          <span className="sidebar-logo-text">PARKLY</span>
+          <button className="sidebar-close-btn" onClick={() => setIsOpen(false)}>
+            <X size={20} />
+          </button>
+        </div>
 
       {/* Navigation */}
       <nav className="sidebar-nav">
@@ -130,6 +139,7 @@ export default function Sidebar() {
               to={item.path}
               className={`sidebar-nav-item ${isActive ? 'active' : ''}`}
               id={`nav-${item.label.toLowerCase().replace(/\s+&?\s*/g, '-')}`}
+              onClick={() => setIsOpen(false)}
             >
               <Icon size={20} strokeWidth={1.8} />
               <span className="sidebar-nav-label">{item.label}</span>
@@ -158,5 +168,6 @@ export default function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }
