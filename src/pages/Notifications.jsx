@@ -43,17 +43,20 @@ export default function Notifications() {
 
         const items = notifsRes?.data?.items || notifsRes?.data || notifsRes?.items || (Array.isArray(notifsRes) ? notifsRes : []);
         if (Array.isArray(items)) {
-          const apiItems = items.map((item, idx) => ({
-            id: item.id || item.notificationId || idx + 200,
-            title: item.title || 'Platform Notification',
-            description: item.message || item.body || 'System alert.',
-            time: item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently',
-            category: item.type?.toLowerCase() || 'alert',
-            unread: !item.isRead,
-            icon: item.type === 'User' ? 'User' : item.type === 'Reservation' ? 'Calendar' : 'Zap',
-            iconBg: item.type === 'User' ? '#EEF4FF' : '#FFF4E5',
-            iconColor: item.type === 'User' ? '#2B76F6' : '#F79009',
-          }));
+          const apiItems = items.map((item, idx) => {
+            const typeStr = item.type ? String(item.type) : 'alert';
+            return {
+              id: item.id || item.notificationId || idx + 200,
+              title: item.title || 'Platform Notification',
+              description: item.message || item.body || 'System alert.',
+              time: item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently',
+              category: typeStr.toLowerCase(),
+              unread: !item.isRead,
+              icon: typeStr === 'User' ? 'User' : typeStr === 'Reservation' ? 'Calendar' : 'Zap',
+              iconBg: typeStr === 'User' ? '#EEF4FF' : '#FFF4E5',
+              iconColor: typeStr === 'User' ? '#2B76F6' : '#F79009',
+            };
+          });
           setNotifications(apiItems);
 
           const unreadCount = apiItems.filter((n) => n.unread).length;
