@@ -41,7 +41,7 @@ export default function Notifications() {
 
         if (!isMounted) return;
 
-        const items = notifsRes?.data?.items || notifsRes?.data;
+        const items = notifsRes?.data?.items || notifsRes?.data || notifsRes?.items || (Array.isArray(notifsRes) ? notifsRes : []);
         if (Array.isArray(items)) {
           const apiItems = items.map((item, idx) => ({
             id: item.id || item.notificationId || idx + 200,
