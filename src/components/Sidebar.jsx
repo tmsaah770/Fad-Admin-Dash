@@ -27,7 +27,7 @@ const iconMap = {
   Settings,
 };
 
-import logoImg from '../assets/dash-logo.jpg';
+import logoImg from '../assets/dash-logo.WEBP';
 
 export default function Sidebar() {
   const location = useLocation();
